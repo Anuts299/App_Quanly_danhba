@@ -1,15 +1,50 @@
+# Tệp cài đặt và tạm thời
 *.iml
-.gradle
-/local.properties
+.gradle/
+.local.properties
+.DS_Store
+
+# Cấu hình Android Studio
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+/.idea/misc.xml
+
+# Build thư mục
+/build/
+.cxx/
+.externalNativeBuild/
+
+# Tệp tạo bởi NDK
+*.so
+obj/
+
+# Tệp APK
+*.apk
+*.ap_
+/captures/
+
+# Tệp tài nguyên
+*.log
+*.map
+*.hprof
+
+# Nội dung liên quan đến Google Services
+google-services.json
+
+# Tệp IntelliJ IDEA
+*.idea/
+*.ipr
+*.iws
+
+# Tệp Gradle wrapper
+gradle-wrapper.jar
+
+# Tệp tạm thời khác
+.classpath
+.project
+.settings/
+out/
