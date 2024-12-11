@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="YInMn_Blue">#384E77</color>
+    <color name="Cambridge">#8bbeb2</color>
+    <color name="Mindaro">#E6F9AF</color>
 </resources>

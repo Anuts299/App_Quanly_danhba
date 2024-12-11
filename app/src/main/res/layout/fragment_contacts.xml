@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/Cambridge"
+    tools:context=".ui.ContactsFragment">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchContacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:iconifiedByDefault="false"
+        app:searchHintIcon="@null"
+        app:queryHint="Tên, số điện thoại,..."
+        android:focusable="false"
+        android:background="@drawable/custom_box"
+        app:closeIcon="@drawable/baseline_clear_24"
+        app:searchIcon="@drawable/baseline_search_24" />
+    <Spinner
+        android:id="@+id/spinner_filter_group"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchContacts"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/custom_box"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingStart="10dp"
+        android:spinnerMode="dropdown" />
+    <Button
+        android:id="@+id/btn_add_contacts"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@id/searchContacts"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:background="@drawable/custom_box"
+        android:text="THÊM"
+        android:paddingHorizontal="50dp"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyView_Contacts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/btn_add_contacts"/>
+
+</RelativeLayout>
