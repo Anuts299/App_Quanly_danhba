@@ -30,6 +30,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -42,6 +45,18 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    implementation ("com.google.firebase:firebase-database:20.4.3") // Firebase Realtime Database
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation ("com.google.firebase:firebase-database")
+    implementation ("com.google.firebase:firebase-firestore")
+
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
+    //Glide: Load image from URL
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:glide:4.16.0")
+
+    //SweetAlertDialog
+    implementation ("com.github.f0ris.sweetalert:library:1.5.6")
+    implementation ("com.afollestad.material-dialogs:core:3.3.0")
 
 }
