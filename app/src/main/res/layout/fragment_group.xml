@@ -1,14 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/Cambridge"
     tools:context=".ui.GroupFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:iconifiedByDefault="false"
+        app:searchHintIcon="@null"
+        app:queryHint="Tên nhóm"
+        android:focusable="false"
+        android:background="@drawable/custom_box"
+        app:closeIcon="@drawable/baseline_clear_24"
+        app:searchIcon="@drawable/baseline_search_24" />
+    <Button
+        android:id="@+id/btn_add_group"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@id/searchGroup"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:background="@drawable/custom_box"
+        android:text="THÊM"
+        android:paddingHorizontal="50dp"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyView_Group"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="GroupFragment" />
+        android:scrollbars="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/btn_add_group"/>
 
-</FrameLayout>
+</RelativeLayout>
