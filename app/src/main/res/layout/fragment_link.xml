@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/Cambridge"
+    android:padding="16dp"
+    tools:context=".ui.LinkFragment">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="8dp"
+        android:backgroundTint="@color/white"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="THÊM LIÊN HỆ VÀO NHÓM"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/YInMn_Blue"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="15dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CHỌN NHÓM"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:textColor="@color/YInMn_Blue"
+            android:layout_marginBottom="5dp"/>
+        <Spinner
+            android:id="@+id/spinner_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_box"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
+            app:cardElevation="4dp"
+            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CHỌN LIÊN HỆ"
+                android:textSize="18dp"
+                android:layout_marginTop="15dp"
+                android:textStyle="bold"
+                android:textColor="@color/YInMn_Blue"
+                android:layout_marginBottom="5dp"/>
+            <Spinner
+                android:id="@+id/spinner_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_box"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                app:cardElevation="4dp"
+                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_add_link"
+                android:layout_marginTop="15dp"
+                android:text="THÊM VÀO NHÓM"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

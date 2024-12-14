@@ -35,6 +35,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         this.mIClickListener = mIClickListener;
     }
 
+    public void setContactsList(List<Contacts> contactsList) {
+        Log.d("ContactsAdapter", "Adapter is updating contacts list with " + contactsList.size() + " contacts");
+        this.mListContacts = contactsList;
+        notifyDataSetChanged();  // Cập nhật giao diện RecyclerView
+    }
+
+
     @NonNull
     @Override
     public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -57,8 +64,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         // Lấy đường dẫn tệp hình ảnh từ đối tượng Contacts
         String imagePath = contacts.getAnh();  // Đảm bảo rằng getAnh() trả về đường dẫn tệp hình ảnh đã lưu
 
-        // Thêm log để kiểm tra đường dẫn ảnh
-        Log.d("ContactsAdapter", "Image path: " + imagePath);
+
 
         if (imagePath != null && !imagePath.isEmpty()) {
             // Chuyển đổi URI 'file://' thành đường dẫn tệp thực sự

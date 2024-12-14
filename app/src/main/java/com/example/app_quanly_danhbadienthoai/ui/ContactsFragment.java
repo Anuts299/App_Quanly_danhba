@@ -32,6 +32,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -56,8 +58,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -66,6 +70,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ContactsFragment extends Fragment {
@@ -80,6 +85,13 @@ public class ContactsFragment extends Fragment {
     private RecyclerView recyView_Contacts;
     private List<Contacts> mListContact;
     private ContactsAdapter mContactsAdapter;
+
+    private ArrayAdapter<String> groupAdapter, contactsAdapter;
+    private ArrayList<String> groupList = new ArrayList<>();
+    private ArrayList<String> contactsList = new ArrayList<>();
+    private Map<String, String> groupMap = new HashMap<>();  // Map nhóm và id nhóm
+    private Map<String, String> contactsMap = new HashMap<>();  // Map liên hệ và id liên hệ// Danh sách liên hệ
+    private List<Contacts> filteredContacts = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,7 +112,7 @@ public class ContactsFragment extends Fragment {
         initUi(view);
         initListener();
         getListContactsFromRealtimeDatabase();
-
+        loadGroupList();
         // Kiểm tra quyền READ_EXTERNAL_STORAGE
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // Nếu chưa có quyền, yêu cầu quyền
@@ -134,6 +146,121 @@ public class ContactsFragment extends Fragment {
 
         return view;
     }
+    private void loadGroupList() {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("GROUP");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                groupList.clear();
+                groupList.add("Tất cả");
+                for (DataSnapshot groupSnapshot : snapshot.getChildren()) {
+                    String id_group = groupSnapshot.getKey();
+                    String name_group = groupSnapshot.child("ten_nhom").getValue(String.class);
+                    if (id_group != null && name_group != null) {
+                        groupList.add(name_group);
+                        groupMap.put(name_group, id_group);  // Lưu ánh xạ tên nhóm và id nhóm
+                    }
+                }
+                groupAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, groupList);
+                groupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner_filter_group.setAdapter(groupAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi
+            }
+        });
+    }
+    private void loadContactsByGroup(String groupId) {
+        List<Contacts> filteredContacts = new ArrayList<>();
+        int totalContacts = mListContact.size();
+        final AtomicInteger processedContacts = new AtomicInteger(0);  // Biến đếm số lần callback được gọi
+
+        // Duyệt qua tất cả liên hệ
+        for (Contacts contact : mListContact) {
+            // Kiểm tra xem liên hệ có thuộc nhóm không
+            isContactInGroup(contact, groupId, new GroupCheckCallback() {
+                @Override
+                public void onGroupChecked(boolean isInGroup) {
+                    if (isInGroup) {
+                        filteredContacts.add(contact);
+                    }
+
+                    // Tăng đếm mỗi lần callback được gọi
+                    int processed = processedContacts.incrementAndGet();
+
+                    // Kiểm tra xem tất cả các liên hệ đã được kiểm tra xong chưa
+                    Log.d("Contacts", "Processed contacts: " + processed);
+                    Log.d("Contacts", "Total contacts: " + totalContacts);
+
+                    if (processed == totalContacts) {
+                        // Cập nhật adapter sau khi lọc
+                        setContactsAdapter(filteredContacts);
+                        Log.d("Contacts", "Filtered contacts size: " + filteredContacts.size());
+                    }
+                }
+            });
+        }
+    }
+
+
+
+
+    private void setContactsAdapter(List<Contacts> contactsList) {
+        if (contactsList == null || contactsList.isEmpty()) {
+            Log.d("Contacts", "Received empty or null contacts list.");
+        } else {
+            Log.d("Contacts", "Setting new contacts list with " + contactsList.size() + " contacts");
+        }
+        mContactsAdapter.setContactsList(contactsList);  // Cập nhật danh sách liên hệ cho adapter
+        mContactsAdapter.notifyDataSetChanged();  // Thông báo cho RecyclerView cập nhật giao diện
+    }
+
+
+
+
+    private void isContactInGroup(Contacts contact, String groupId, final GroupCheckCallback callback) {
+        Log.d("Contacts", "Checking if contact " + contact.getTen_lien_he() + " is in group " + groupId);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("CONTACTS_GROUP");
+
+        // Lọc theo id_contacts và id_group
+        ref.orderByChild("id_contacts").equalTo(contact.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean isInGroup = false;
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String groupIdFromDb = dataSnapshot.child("id_group").getValue(String.class);
+
+                    // Kiểm tra xem nhóm có khớp không
+                    if (groupId.equals(groupIdFromDb)) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
+
+                Log.d("Contacts", "Contact " + contact.getTen_lien_he() + " is in group: " + isInGroup);
+                callback.onGroupChecked(isInGroup); // Gọi callback để thông báo kết quả
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi
+                Log.e("Contacts", "Error checking contact group: " + error.getMessage());
+            }
+        });
+    }
+
+
+    // Callback interface
+    public interface GroupCheckCallback {
+        void onGroupChecked(boolean isInGroup);
+    }
+
+
+
     private void saveImageToInternalStorage(Uri imageUri) {
         try {
             // Mở InputStream từ URI ảnh
@@ -386,6 +513,27 @@ public class ContactsFragment extends Fragment {
                 uploadImageAndAddContact();
             }
         });
+        spinner_filter_group.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String groupName = parentView.getItemAtPosition(position).toString();
+
+                // Kiểm tra nếu người dùng chọn "Tất cả"
+                if (groupName.equals("Tất cả")) {
+                    setContactsAdapter(mListContact);
+                } else {
+                    String groupId = groupMap.get(groupName);  // Lấy id nhóm từ tên nhóm
+                    Log.d("Spinner", "Selected group: " + groupId);  // Log khi chọn nhóm
+                    loadContactsByGroup(groupId);  // Lọc liên hệ theo nhóm
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Xử lý khi không chọn gì (tuỳ vào ứng dụng, có thể không cần thiết)
+            }
+        });
+
 
 
     }
@@ -452,13 +600,8 @@ public class ContactsFragment extends Fragment {
             }
 
             String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-            if (!email_contacts.matches(emailPattern)) {
+            if (!email_contacts.matches(emailPattern) && !email_contacts.isEmpty()) {
                 showAlert(SweetAlertDialog.ERROR_TYPE,"Lỗi dữ liệu nhập", "Hãy nhập đúng email (abc@gmail.com)");
-                return;
-            }
-
-            if (birthday_contacts.isEmpty()) {
-                showAlert(SweetAlertDialog.ERROR_TYPE,"Lỗi định dạng ngày tháng", "Ngày tháng không hợp lệ. Vui lòng kiểm tra lại định dạng (vd: dd/mm/yyyy)");
                 return;
             }
 
@@ -570,7 +713,7 @@ public class ContactsFragment extends Fragment {
     private void getListContactsFromRealtimeDatabase(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("CONTACTS");
-
+        mListContact.clear();
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
