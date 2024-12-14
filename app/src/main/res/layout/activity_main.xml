@@ -94,6 +94,8 @@
 
 
                 <LinearLayout
+                    android:clickable="true"
+                    android:focusable="true"
                     android:id="@+id/btn_contacts_group"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
